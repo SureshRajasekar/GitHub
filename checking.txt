@@ -1,1 +1,89 @@
-used for push
+DATA COLLECTION
+
+import numpy as np #Numeric Python used for Scientific Computing
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv), data manipulation as in SQL
+import matplotlib.pyplot as plt #2-D plotting library 
+%matplotlib inline #For showing plot in Jupyter.
+bos1 = pd.read_csv('BostonHousing.csv')
+
+DATA ANALYSIS AND WRANDGLING
+bos1.head()
+bos1.tail()
+bos1.dtypes # Because Linear regression supports numerical datatype
+bos1.shape
+bos1.describe()
+bos1.isnull().sum()
+
+VISUALIZATION
+plt.hist(bos1['medv'])
+
+x = bos1.iloc[:,0:13]
+y = bos1["medv"]
+
+#code to plot correlation
+
+#librarry to establish correlation
+import seaborn as sns
+correlations = bos1.corr()  #creating a correlation matrix
+sns.heatmap(correlations,square = True, cmap = "YlGnBu")
+plt.yticks(rotation=0)
+plt.xticks(rotation=90)
+plt.show()
+
+
+FEATURE SELECTION
+from statsmodels.stats.outliers_influence import variance_inflation_factor
+vif=pd.DataFrame()
+vif['VIF']=[variance_inflation_factor(x.values,i) for i in range(x.shape[1])]
+vif['features'] = x.columns
+vif # VIF Values > 10 Multicolinearity problem
+
+TRAIN AND TEST SPLIT
+from sklearn.cross_validation import train_test_split
+#testing data size is of 33% of entire data
+x_train, x_test, y_train, y_test =train_test_split(x,y, test_size = 0.33, random_state =5)
+
+x_train.shape
+x_test.shape
+x_train.head()
+
+from sklearn.linear_model import LinearRegression
+#fitting our model to train and test
+lm = LinearRegression()
+model = lm.fit(x_train,y_train)
+pred_y = lm.predict(x_test)
+
+
+plt.scatter(y_test,pred_y)
+plt.xlabel('Y Test')
+plt.ylabel('Predicted Y')
+
+ACCURACY
+
+from sklearn import metrics
+print('MAE:', metrics.mean_absolute_error(y_test,pred_y))
+print('MSE:',metrics.mean_squared_error(y_test,pred_y))
+print('RMSE:',np.sqrt(metrics.mean_squared_error(y_test,pred_y)))
+
+# Coefficient of determination R2 - Explained Variance/(Explained Variance+UnExplained Variance) 
+#Adding more and more variable in our model will increase the R2 value
+# Need to take Adjusted R2
+model.score(x_train,y_train)
+
+model.score(x_test,y_test)
+
+
+from sklearn.metrics import r2_score
+r2_score(y_test,pred_y)
+
+#Box-Cox Transformation / Power Transformation
+#Reducing the spread
+#If we have skew distribution them take log transformation
+#bos1['logmedv']=np.log(boston['medv'])
+#plt.hist(bos1['logmedv'])
+
+x.columns # Columns
+
+model.coef_ # Slope y = m1x1+m2x2+m3x3+c   m1m2m3 - Slope
+
+model.intercept_   #c - Intercept
