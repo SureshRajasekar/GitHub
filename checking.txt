@@ -1,1 +1,202 @@
-CHECKING
+#from sklearn.model_selection import cross_val_score
+import numpy as np # linear algebra
+import pandas as pd # data processing, CSV file I/O (e.g. pd.read_csv), data manipulation as in SQL
+import matplotlib.pyplot as plt # this is used for the plot the graph
+import seaborn as sns # used for plot interactive graph. I like it most for plot
+from sklearn.linear_model import LogisticRegression # to apply the Logistic regression
+from sklearn.model_selection import train_test_split # to split the data into two parts
+from sklearn import metrics # for the check the error and accuracy of the model
+#from sklearn.tree import DecisionTreeClassifier
+# Any results you write to the current directory are saved as output.
+# dont worry about the error if its not working then insteda of 
+
+df = pd.read_csv("data.csv") ### Cancer dataset
+
+df.head() # displaying first 5 rows of the dataset
+
+# dimension
+df.shape
+
+## checking if any null vaklues exist in the data
+df.isnull().sum()
+
+#df = df.drop('id',inplace=True, axis=1) ### dropping ID variable
+df = df.iloc[:,1:32]
+
+
+df.head()
+
+df.shape
+
+df.describe()
+
+#df.corr()
+
+df['diagnosis']=df['diagnosis'].map({'M':1,'B':0}) # converting text lables to numbers
+
+df.head()
+
+x = df.iloc[:,1:] # spilitting features
+#x = df[['perimeter_mean','compactness_mean']]
+y= df.diagnosis # Labels
+
+# !pip install -U imbalanced-learn
+
+# from imblearn.over_sampling import SMOTE
+# smt = SMOTE()
+# X_smote, y_smote = smt.fit_sample(x, y)
+
+df['diagnosis'].value_counts()
+
+
+from sklearn.cross_validation import train_test_split
+#testing data size is of 30% of entire data
+x_train, x_test, y_train, y_test =train_test_split(x,y, test_size = 0.20, random_state=5) # train test split
+
+x_train.head()
+
+logistic = LogisticRegression().fit(x_train,y_train)
+
+
+pred =logistic.predict(x_test)
+
+pred
+
+from sklearn.metrics import confusion_matrix
+
+confusion_matrix(y_test,pred)
+
+(65+46)/(65+46+1+2)
+
+print(logistic.score(x_test,y_test, sample_weight=None))
+
+from sklearn import metrics
+
+fpr, tpr, thresholds = metrics.roc_curve(y_test, pred)
+
+#logistic.predict_proba(x_test)
+
+from sklearn.tree import DecisionTreeClassifier
+# from sklearn.model_selection import cross_val_score
+
+clf = DecisionTreeClassifier(criterion='gini',random_state=0)
+#cross_val_score(clf, train_X, train_y, cv=10)
+clf.fit(x_train,y_train, sample_weight=None, check_input=True, X_idx_sorted=None)
+
+print(clf.score(x_test,y_test, sample_weight=None))
+
+pred = clf.predict(x_test)
+
+x_train.columns
+
+clf.feature_importances_
+
+# from sklearn.externals.six import StringIO  
+# from IPython.display import Image  
+# from sklearn.tree import export_graphviz
+# import pydotplus
+# from sklearn import tree
+
+# dot_data = StringIO()
+# tree.export_graphviz(clf, out_file=dot_data,  
+#                 filled=True, rounded=True,
+#                 special_characters=True)
+# graph = pydotplus.graph_from_dot_data(dot_data.getvalue())  
+
+#Image(graph.create_png())
+
+confusion_matrix(y_test, pred)
+
+#clf.predict_proba(x_test)
+
+from sklearn.ensemble import RandomForestClassifier
+
+#RandomForest classifier
+model=RandomForestClassifier(n_estimators=100,criterion="gini",oob_score=True)# a simple random forest model
+model.fit(x_train,y_train)# now fit our model for traiing data
+
+pred_rf = model.predict(x_test)
+
+pred_rf
+
+print(metrics.accuracy_score(pred_rf,y_test)) # to check the accuracy
+
+model.oob_score_ ### Accurcay of validation data
+
+model.feature_importances_
+
+#df.columns
+
+######### Naive Bayes Implementation
+
+from sklearn.naive_bayes import GaussianNB
+
+nb = GaussianNB()
+nb.fit(x_train,y_train)
+
+pred_nb = nb.predict(x_test)
+
+pred_nb
+
+#pred_nb_prob = nb.predict_proba(x_test)
+#pred_nb_prob[:,1]
+
+confusion_matrix(y_test, pred_nb)
+
+print(metrics.accuracy_score(pred_nb,y_test)) # to check the accuracy
+
+#nb.score(x_test,y_test)
+
+### Implementing SVM
+
+from sklearn.svm import SVC
+
+model_svm = SVC(kernel='rbf',C=10, gamma=0.01)
+model_svm.fit(x_train,y_train)
+
+pred_svm = model_svm.predict(x_test)
+
+pred_svm
+
+print(metrics.accuracy_score(pred_svm,y_test)) # to check the accuracy
+
+from sklearn.model_selection import GridSearchCV
+
+tuned_parameters = [{'kernel': ['rbf','poly'], 'gamma': [1e-3, 1],
+                     'C': [1, 5]}, {'kernel': ['linear'], 'C': [1, 10, 100]}]
+
+clf = GridSearchCV(SVC(), tuned_parameters, cv=None)
+clf.fit(x_train, y_train)
+
+clf.best_params_
+
+for score in scores:
+    print("# Tuning hyper-parameters for %s" % score)
+    print()
+
+    clf = GridSearchCV(SVC(), tuned_parameters, cv=2,
+                       scoring='%s_macro' % score)
+    clf.fit(x_train, y_train)
+
+    print("Best parameters set found on development set:")
+    print()
+    print(clf.best_params_)
+    print()
+    print("Grid scores on development set:")
+    print()
+    means = clf.cv_results_['mean_test_score']
+    stds = clf.cv_results_['std_test_score']
+    for mean, std, params in zip(means, stds, clf.cv_results_['params']):
+        print("%0.3f (+/-%0.03f) for %r"
+              % (mean, std * 2, params))
+    print()
+
+    print("Detailed classification report:")
+    print()
+    print("The model is trained on the full development set.")
+    print("The scores are computed on the full evaluation set.")
+    print()
+    y_true, y_pred = y_test, clf.predict(x_test)
+    print(classification_report(y_test, y_pred))
+    print()
+
