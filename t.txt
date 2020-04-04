@@ -1,0 +1,46 @@
+GENERAL	BOTH ARE USED FOR PREDICTING THE FUTURE		CLASSIFICATION			
+	LINEAR	LOGISTIC	DECISION TREE	RANDOM FOREST	NAÏVE BAYES	KNN
+CONCEPT	Data is modelled using a straight line	Probability of some obtained event is represented as a linear function of combination of predictor variable. We are mapping y vs x to a sigmoit function	"Graphical representation of all possible solution to a decision
+Decision are based on some condition
+Breakdown the dataset into smaller subset"	"Ensemble Classifier made using many decision tree models
+Ensemble models combine the results from different models.
+Select random rows and built decision trees 
+"	"Probability of the event based on some prioir knowledge of conditions that might be related to the event.
+Classification technique based on Bayes therorem with an assumption an independence among predictors.
+Naïve
+Bayes."	
+USED WITH	Continuous Variable	Categorical Variable				
+OUTPUT	Value of the variable	Probability of occurance of event				
+ACCURACY AND GOODNESS OF FIT	"Measured by loss
+R squared - How close data are fitted to regression line (Also called Coefficient of Determination or Coefficient of Multiple determination)
+Adjusted R squared"	"Accuracy,Precision
+Recall,F1 score
+ROC curve
+Confusion matrix"	accuracy_score	accuracy_score		
+SELECTION	"Regression - Predict a continuous value
+Data Quality - Outlier will disturb the threshold
+Computational Complexity - Easy
+Comprehensible and Transparent"	Solves Classificaiton Problem	"Classification Problem
+If relation between dependent and independent variable is well approximated by linear model then use linear regression if relation is non linear/complex relationship betwn dep and inde var then use decision tree and also for to interpret to the organization very well use decision tree."	"Algorithm capable of performing both Regression and Classfication.
+Most accurate because multipli decision tree formed.
+Runs efficiently on large database.
+No input preparation (Ouliers)
+Perform implicit feature selection.
+Run parallely
+Methods for balancing error in unbalanced dataset."		
+Uses	"Evaluating Trends and Sales Estimates
+Analyzing the impact of Price Changes.
+Assesment of risk in financial services and insurance domain."	Predicting probability	"Fraud Detection(Transaction is Geniune or Not)
+Gmail SPAM or NOT"	"BANKING - Identification of loan risk applicant by their probability of defaulting payment.
+MEDICINE : Identification of at-risk patients and disease trends.
+MARKETING - Identifying the customer churn"		
+Equation	Slope M = S(X-X`)(Y-Y`)/S(X-X`)2					
+Variable	"INPUT : Continuous Variable
+OUPUT : Continuous Variable"	"INPUT : Continuous Variable
+OUPUT : Discrete/Categorical Variable
+0 OR 1, TRUE/FLASE,YES/NO, HIGH/LOW"				
+DESCRIPTION	Y = MX+C	Sigmoid Curve converts any value from -Infinity to +Infinity to binary value using threshold value				
+	Straight Line	Sigmoid Curve				
+			"Entropy - Degree of randomness/Impurity
+If the number of Yes = Number of No Entropy = 1
+If all contains Yes or No thenentropy ios 0"			
